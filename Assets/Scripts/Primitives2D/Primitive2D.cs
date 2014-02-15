@@ -6,11 +6,12 @@ namespace Primitives2D {
 	public abstract class Primitive2D : MonoBehaviour
 	{
 		public Color color;
+		[HideInInspector]
+		public Vector3[] m_Vertices;
 
 		protected Mesh m_Mesh;
 		protected MeshRenderer m_Renderer;
 		protected Material m_Material;
-		protected Vector3[] m_Vertices;
 		protected int[] m_Triangles;
 
 
@@ -65,7 +66,7 @@ namespace Primitives2D {
 		{
 			CreateMesh();
 			CalculateVertices ();
-			
+
 			m_Mesh.RecalculateNormals ();
 			m_Mesh.RecalculateBounds ();
 		}

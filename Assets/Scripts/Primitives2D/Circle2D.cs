@@ -47,12 +47,12 @@ namespace Primitives2D {
 					m_Vertices[i] = new Vector3(x, y, 0f);
 					angle += angleIncr;
 				}
-
-				m_Mesh.vertices = m_Vertices;
-
-				CalculateUVs();
-				CalculateTriangles();
 			}
+
+			m_Mesh.vertices = m_Vertices;
+			
+			CalculateUVs();
+			CalculateTriangles();
 		}
 
 		public override void CalculateUVs ()
@@ -102,6 +102,7 @@ namespace Primitives2D {
 
 		void Reset ()
 		{
+			m_Vertices = null;
 			numPoints = 30;
 			color = Color.black;
 			UpdateMesh();
