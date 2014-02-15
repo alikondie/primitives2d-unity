@@ -5,8 +5,8 @@ namespace Primitives2D {
 
 	public abstract class Primitive2D : MonoBehaviour {
 
-		public Material material;
-		public Color color;			// Color is only assigned to the primitive if no material is specified.
+		//public Material material;
+		public Color color;
 
 		protected Mesh m_Mesh;
 		protected MeshRenderer m_Renderer;
@@ -18,18 +18,18 @@ namespace Primitives2D {
 		/// Creates and adds the MeshFilter component that is responsible for defining the shape of the primitive.
 		/// </summary>
 		/// <returns>The mesh with added MeshFilter component.</returns>
-		public Mesh CreateMesh ()
+		public void CreateMesh ()
 		{
-			m_Mesh = new Mesh();
-			GetComponent<MeshFilter>().mesh = m_Mesh;
-			GetComponent<MeshFilter>().sharedMesh = m_Mesh;
-			m_Mesh.Clear ();
-
-			return m_Mesh;
+			if (m_Mesh == null) {
+				m_Mesh = new Mesh();
+				GetComponent<MeshFilter>().mesh = m_Mesh;
+				m_Mesh.hideFlags = HideFlags.HideAndDontSave;
+			}
 		}
 
 		/// <summary>
-		/// Calculates the vertices that define the shape of the mesh. Vertices are calculated in a clockwise direction.
+		/// Calculates the vertices that define the shape of the mesh. Vertices are calculated in a clockwise direction. Calculates uv texture coordinates
+		/// and the mesh's triangles from the vertices.
 		/// </summary>
 		public abstract void CalculateVertices();
 		/// <summary>
@@ -46,15 +46,13 @@ namespace Primitives2D {
 		/// Adds the material onto the shape's mesh renderer. If no material is specified in the inspector, the default "diffuse" shader is used
 		/// with the given color.
 		/// </summary>
-		public virtual void AddMaterial ()
+		public void AddMaterial ()
 		{
-			if (material == null) {
-				material = new Material(Shader.Find ("Diffuse"));
-				material.color = color;
-			}
+			Material mat = new Material(Shader.Find ("Diffuse"));
+			mat.color = color;
 
 			m_Renderer = GetComponent<MeshRenderer>();
-			m_Renderer.material = material;
+			m_Renderer.material = mat;
 			m_Renderer.castShadows = false;
 			m_Renderer.receiveShadows = false;
 		}
@@ -62,30 +60,21 @@ namespace Primitives2D {
 		/// <summary>
 		/// Create the primitive shape by adding the required Unity components.
 		/// </summary>
-		public void Setup ()
+		public void UpdateMesh ()
 		{
-			if (m_Mesh == null)
-				CreateMesh();
-
-			if (m_Vertices == null) {
-				CalculateVertices ();
-				CalculateUVs ();
-			}
-
-			if (m_Triangles == null)
-				CalculateTriangles ();
+			CreateMesh();
+			CalculateVertices ();
 			
 			m_Mesh.RecalculateNormals ();
 			m_Mesh.RecalculateBounds ();
-			
-			AddMaterial ();
 		}
 
-
-		// MonoBehavior method
-		void Reset ()
+		/// <summary>
+		/// Updates the primitive's color in the scene view while updating in the inspector.
+		/// </summary>
+		public void UpdateColor ()
 		{
-			Setup();
+			GetComponent<MeshRenderer>().material.color = color;
 		}
 
 	}

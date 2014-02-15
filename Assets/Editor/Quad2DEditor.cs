@@ -5,18 +5,17 @@ using Primitives2D;
 
 namespace Primitives2D {
 
-	[CustomEditor(typeof(Circle2D))]
-	public class Circle2DEditor : Editor {
+	[CustomEditor(typeof(Quad2D))]
+	public class Quad2DEditor : Editor {
 		
 		private SerializedObject primitive;
-		private SerializedProperty numPoints, color;
-		
+		private SerializedProperty color, rotationSpeed;
 		
 		void OnEnable ()
 		{
 			primitive = new SerializedObject(target);
-			numPoints = primitive.FindProperty("numPoints");
 			color = primitive.FindProperty("color");
+			rotationSpeed = primitive.FindProperty("rotationSpeed");
 		}
 		
 		public override void OnInspectorGUI ()
@@ -24,12 +23,12 @@ namespace Primitives2D {
 			primitive.Update();
 
 			EditorGUILayout.PropertyField(color);
-			EditorGUILayout.PropertyField(numPoints);
+			EditorGUILayout.PropertyField(rotationSpeed);
 			
 			if (primitive.ApplyModifiedProperties()) {
 				if (PrefabUtility.GetPrefabType(target) != PrefabType.Prefab) {
-					(target as Circle2D).UpdateMesh();
-					(target as Circle2D).UpdateColor();
+					(target as Quad2D).UpdateMesh();
+					(target as Quad2D).UpdateColor();
 				}
 			}
 		}

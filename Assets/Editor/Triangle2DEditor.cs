@@ -10,20 +10,27 @@ namespace Primitives2D {
 	public class Triangle2DEditor : Editor {
 
 		private SerializedObject primitive;
+		private SerializedProperty color, rotationSpeed;
 
 
 		void OnEnable ()
 		{
 			primitive = new SerializedObject(target);
+			color = primitive.FindProperty("color");
+			rotationSpeed = primitive.FindProperty("rotationSpeed");
 		}
 		
 		public override void OnInspectorGUI ()
 		{
-			DrawDefaultInspector();
+			primitive.Update();
+
+			EditorGUILayout.PropertyField(color);
+			EditorGUILayout.PropertyField(rotationSpeed);
 
 			if (primitive.ApplyModifiedProperties()) {
 				if (PrefabUtility.GetPrefabType(target) != PrefabType.Prefab) {
-					(target as Triangle2D).Setup();
+					(target as Triangle2D).UpdateMesh();
+					(target as Triangle2D).UpdateColor();
 				}
 			}
 		}
