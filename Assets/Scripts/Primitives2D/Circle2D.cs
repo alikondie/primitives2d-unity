@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace Primitives2D {
 
+	[ExecuteInEditMode, RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 	public class Circle2D : Primitive2D {
 
 		public float radius = 2f;
@@ -10,10 +11,16 @@ namespace Primitives2D {
 		
 		private const float TWO_PI = Mathf.PI * 2f;
 		
-		
-		void Start ()
+
+		/// <summary>
+		/// Do setup in this method as opposed to Start() since updating a prefab calls OnDisable/OnEnable. This way we intercept both initialization
+		/// and prefab updates in one place.
+		/// </summary>
+		void OnEnable ()
 		{
 			Setup ();
+			m_Mesh.hideFlags = HideFlags.HideAndDontSave;
+			m_Mesh.name = "Circle Mesh";
 		}
 
 		public override void CalculateVertices ()
@@ -35,6 +42,8 @@ namespace Primitives2D {
 				m_Vertices[i] = new Vector3(x, y, 0f);
 				angle += angleIncr;
 			}
+
+			m_Mesh.vertices = m_Vertices;
 		}
 
 		public override void CalculateUVs ()
@@ -45,6 +54,8 @@ namespace Primitives2D {
 				uvs[i] = new Vector2(m_Vertices[i].x, m_Vertices[i].y);
 			}
 			m_Mesh.uv = uvs;
+			m_Mesh.uv1 = uvs;
+			m_Mesh.uv2 = uvs;
 		}
 		
 		public override void CalculateTriangles ()
@@ -66,9 +77,11 @@ namespace Primitives2D {
 			m_Triangles[index + 0] = 0;
 			m_Triangles[index + 1] = numPoints - 1;
 			m_Triangles[index + 2] = 1;
+
+			m_Mesh.triangles = m_Triangles;
 		}
 		
-		public override void AddCollider ()
+		/*public override void AddCollider ()
 		{
 			gameObject.AddComponent<CircleCollider2D>();
 			
@@ -76,7 +89,7 @@ namespace Primitives2D {
 			circleColl.center = new Vector2(0f, 0f);
 			circleColl.radius = radius;
 			circleColl.isTrigger = true;
-		}
+		}*/
 		
 		private void LogCircleDataToConsole ()
 		{
@@ -87,5 +100,7 @@ namespace Primitives2D {
 				Debug.Log ("vertex" + i + "] = " + m_Vertices[i].x + ", " + m_Vertices[i].y);
 			}
 		}
+
 	}
+
 }

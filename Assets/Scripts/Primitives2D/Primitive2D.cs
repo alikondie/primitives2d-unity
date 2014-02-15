@@ -8,9 +8,6 @@ namespace Primitives2D {
 		public Material material;
 		public Color color;			// Color is only assigned to the primitive if no material is specified.
 
-		public bool hasCollider = true;
-		public bool hasRigidbody = false;
-
 		protected Mesh m_Mesh;
 		protected MeshRenderer m_Renderer;
 		protected Vector3[] m_Vertices;
@@ -24,7 +21,6 @@ namespace Primitives2D {
 		public Mesh CreateMesh ()
 		{
 			m_Mesh = new Mesh();
-			gameObject.AddComponent<MeshFilter>();
 			GetComponent<MeshFilter>().mesh = m_Mesh;
 			GetComponent<MeshFilter>().sharedMesh = m_Mesh;
 			m_Mesh.Clear ();
@@ -45,10 +41,6 @@ namespace Primitives2D {
 		/// vertices of the mesh to define the "face" of the object.
 		/// </summary>
 		public abstract void CalculateTriangles();
-		/// <summary>
-		/// Adds the appropriate collider to the primitive based on its shape.
-		/// </summary>
-		public abstract void AddCollider();
 
 		/// <summary>
 		/// Adds the material onto the shape's mesh renderer. If no material is specified in the inspector, the default "diffuse" shader is used
@@ -60,8 +52,7 @@ namespace Primitives2D {
 				material = new Material(Shader.Find ("Diffuse"));
 				material.color = color;
 			}
-			
-			gameObject.AddComponent<MeshRenderer>();
+
 			m_Renderer = GetComponent<MeshRenderer>();
 			m_Renderer.material = material;
 			m_Renderer.castShadows = false;
@@ -69,39 +60,34 @@ namespace Primitives2D {
 		}
 
 		/// <summary>
-		/// Adds a rigidbody to the primitive.
-		/// </summary>
-		public virtual void AddRigidbody ()
-		{
-			gameObject.AddComponent<Rigidbody2D>();
-			Rigidbody2D rigidbody = GetComponent<Rigidbody2D>();
-			rigidbody.isKinematic = true;
-		}
-
-
-		/// <summary>
 		/// Create the primitive shape by adding the required Unity components.
 		/// </summary>
 		public void Setup ()
 		{
-			CreateMesh();
-			
-			CalculateVertices ();
-			m_Mesh.vertices = m_Vertices;
-			
-			CalculateUVs ();
-			
-			CalculateTriangles ();
-			m_Mesh.triangles = m_Triangles;
+			if (m_Mesh == null)
+				CreateMesh();
+
+			if (m_Vertices == null) {
+				CalculateVertices ();
+				CalculateUVs ();
+			}
+
+			if (m_Triangles == null)
+				CalculateTriangles ();
 			
 			m_Mesh.RecalculateNormals ();
 			m_Mesh.RecalculateBounds ();
 			
 			AddMaterial ();
-			if (hasRigidbody)
-				AddRigidbody ();
-			if (hasCollider)
-				AddCollider ();
 		}
+
+
+		// MonoBehavior method
+		void Reset ()
+		{
+			Setup();
+		}
+
 	}
+
 }
