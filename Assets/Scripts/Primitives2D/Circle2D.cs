@@ -11,21 +11,16 @@ namespace Primitives2D {
 
 		private const float UNIT_RADIUS = 1f;
 		private const float TWO_PI = Mathf.PI * 2f;
-		
 
-		void Start ()
+
+		/// <summary>
+		/// Do initialization here instead of Start because it will ensure proper behavior when creating a prefab, which calls OnDisable/OnEnable.
+		/// </summary>
+		void OnEnable ()
 		{
 			UpdateMesh();
 			m_Mesh.name = "Circle Mesh";
 			AddMaterial();
-		}
-
-		/// <summary>
-		/// Updating the mesh here ensures proper behavior when creating a prefab, since it calls OnDisable/OnEnable.
-		/// </summary>
-		void OnEnable ()
-		{
-			UpdateMesh ();
 		}
 
 		public override void CalculateVertices ()

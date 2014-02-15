@@ -3,13 +3,13 @@ using System.Collections;
 
 namespace Primitives2D {
 
-	public abstract class Primitive2D : MonoBehaviour {
-
-		//public Material material;
+	public abstract class Primitive2D : MonoBehaviour
+	{
 		public Color color;
 
 		protected Mesh m_Mesh;
 		protected MeshRenderer m_Renderer;
+		protected Material m_Material;
 		protected Vector3[] m_Vertices;
 		protected int[] m_Triangles;
 
@@ -48,13 +48,14 @@ namespace Primitives2D {
 		/// </summary>
 		public void AddMaterial ()
 		{
-			Material mat = new Material(Shader.Find ("Diffuse"));
-			mat.color = color;
+			if (m_Material == null) {
+				m_Material = new Material(Shader.Find ("Diffuse"));
+				m_Material.color = color;
 
-			m_Renderer = GetComponent<MeshRenderer>();
-			m_Renderer.material = mat;
-			m_Renderer.castShadows = false;
-			m_Renderer.receiveShadows = false;
+				renderer.material = m_Material;
+				renderer.castShadows = false;
+				renderer.receiveShadows = false;
+			}
 		}
 
 		/// <summary>
@@ -74,9 +75,19 @@ namespace Primitives2D {
 		/// </summary>
 		public void UpdateColor ()
 		{
-			GetComponent<MeshRenderer>().material.color = color;
+			m_Material.color = color;
 		}
 
+
+		void OnDestroy ()
+		{
+			// Still need to verify this..
+			if (Application.isPlaying) {
+				Destroy (m_Material);
+			} else {
+				DestroyImmediate(m_Material);
+			}
+		}
 	}
 
 }

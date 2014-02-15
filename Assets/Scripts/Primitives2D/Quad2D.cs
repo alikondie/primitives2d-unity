@@ -4,26 +4,21 @@ using System.Collections;
 namespace Primitives2D {
 
 	[ExecuteInEditMode, RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-	public class Quad2D : Primitive2D {
-
+	public class Quad2D : Primitive2D
+	{
 		public float rotationSpeed = 0f;
 
 		private const float UNIT_LENGTH = 1f;
 
 
-		void Start ()
-		{
-			UpdateMesh();
-			m_Mesh.name = "Quad Mesh";
-			AddMaterial();
-		}
-
 		/// <summary>
-		/// Updating the mesh here ensures proper behavior when creating a prefab, since it calls OnDisable/OnEnable.
+		/// Do initialization here instead of Start because it will ensure proper behavior when creating a prefab, which calls OnDisable/OnEnable.
 		/// </summary>
 		void OnEnable ()
 		{
 			UpdateMesh ();
+			m_Mesh.name = "Quad Mesh";
+			AddMaterial();
 		}
 
 		public override void CalculateVertices ()
