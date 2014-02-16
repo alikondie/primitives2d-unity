@@ -8,6 +8,8 @@ namespace Primitives2D {
 	public class Quad2D : Primitive2D
 	{
 		public float rotationSpeed = 0f;
+		public float snapValue = 0.5f;
+		public bool snapVertexPositions = false;
 
 		private const float UNIT_LENGTH = 1f;
 

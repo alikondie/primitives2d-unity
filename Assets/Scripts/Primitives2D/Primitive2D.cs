@@ -63,6 +63,27 @@ namespace Primitives2D {
 		}
 
 		/// <summary>
+		/// All three primitives need a polygon collider in order for it to match the exact shape of the mesh since the vertices can be moved. 
+		/// The collider needs only one path, which is set to the same positions as the primitive's vertices.
+		/// The Circle2D shape overrides this method to handle its more particular case.
+		/// </summary>
+		/// <param name="numSides">Number of sides to match the primitive.</param>
+		public virtual void AddCollider (int numSides)
+		{
+			gameObject.AddComponent<PolygonCollider2D>();
+			
+			PolygonCollider2D coll = GetComponent<PolygonCollider2D>();
+			coll.CreatePrimitive(numSides);
+			coll.pathCount = 1;
+			
+			Vector2[] collPoints = new Vector2[numSides];
+			for (int i = 0; i < numSides; ++i) {
+				collPoints[i] = m_Vertices[i];
+			}
+			coll.SetPath(0, collPoints);
+		}
+
+		/// <summary>
 		/// Create the primitive shape by adding the required Unity components.
 		/// </summary>
 		public void UpdateMesh ()
@@ -75,6 +96,26 @@ namespace Primitives2D {
 
 			if (m_Material != null) {
 				m_Material.color = color;
+			}
+		}
+
+		/// <summary>
+		/// This method is called from the editor when a vertex is moved in the scene view, updating its position as well as the path that
+		/// defines the collider (if there is one).
+		/// </summary>
+		/// <param name="index">Index of the vertex to update.</param>
+		/// <param name="position">New position in local space.</param>
+		public void UpdateVertex (int index, Vector2 position)
+		{
+			m_Vertices[index] = position;
+
+			if (collider2D != null) {
+				PolygonCollider2D coll = (PolygonCollider2D)collider2D;
+				Vector2[] collPoints = new Vector2[coll.GetPath(0).Length];
+				for (int i = 0; i < collPoints.Length; ++i) {
+					collPoints[i] = m_Vertices[i];
+				}
+				coll.SetPath(0, collPoints);
 			}
 		}
 

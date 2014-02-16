@@ -26,6 +26,11 @@ namespace Primitives2D {
 
 			EditorGUILayout.PropertyField(color);
 			EditorGUILayout.PropertyField(numPoints);
+			EditorGUILayout.Space();
+
+			if (GUILayout.Button("Add Collider")) {
+				(target as Circle2D).AddCollider((target as Circle2D).numPoints);
+			}
 
 			// This undo action seems to leak the material due to the object being passed to RecordObject being copied
 			//Undo.RecordObject(target, "Modify Circle");
