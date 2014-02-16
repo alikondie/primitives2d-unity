@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections;
 using Primitives2D;
 
+
 namespace Primitives2D {
 
 	[CustomEditor(typeof(Quad2D))]
@@ -25,13 +26,16 @@ namespace Primitives2D {
 		{
 			primitive.Update();
 
+			// This undo action seems to leak the material due to the object being passed to RecordObject being copied
+			//Undo.RecordObject((target as Quad2D), "Modify Quad");
+
 			EditorGUILayout.PropertyField(color);
 			EditorGUILayout.PropertyField(rotationSpeed);
 			
-			if (primitive.ApplyModifiedProperties()) {
+			if (primitive.ApplyModifiedProperties() ||
+			    (Event.current.type == EventType.ValidateCommand && Event.current.commandName == "UndoRedoPerformed")) {
 				if (PrefabUtility.GetPrefabType(target) != PrefabType.Prefab) {
 					(target as Quad2D).UpdateMesh();
-					(target as Quad2D).UpdateColor();
 				}
 			}
 		}
@@ -40,6 +44,8 @@ namespace Primitives2D {
 		{
 			Quad2D quad = (Quad2D)target;
 			Transform quadTransform = quad.transform;
+
+			Undo.RecordObject(quad, "Move Quad Point");
 
 			for (int i = 0; i < 4; ++i) {
 				Vector3 oldPoint = quadTransform.TransformPoint(quad.m_Vertices[i]);

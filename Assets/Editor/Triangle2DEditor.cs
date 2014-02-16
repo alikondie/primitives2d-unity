@@ -9,7 +9,7 @@ namespace Primitives2D {
 	[CustomEditor(typeof(Triangle2D))]
 	public class Triangle2DEditor : Editor {
 
-		private SerializedObject primitive;
+		private SerializedObject triangle;
 		private SerializedProperty color, rotationSpeed;
 
 		private Vector3 snapPoint = Vector3.one * 0.1f;
@@ -17,22 +17,25 @@ namespace Primitives2D {
 
 		void OnEnable ()
 		{
-			primitive = new SerializedObject(target);
-			color = primitive.FindProperty("color");
-			rotationSpeed = primitive.FindProperty("rotationSpeed");
+			triangle = new SerializedObject(target);
+			color = triangle.FindProperty("color");
+			rotationSpeed = triangle.FindProperty("rotationSpeed");
 		}
 		
 		public override void OnInspectorGUI ()
 		{
-			primitive.Update();
+			triangle.Update();
 
 			EditorGUILayout.PropertyField(color);
 			EditorGUILayout.PropertyField(rotationSpeed);
 
-			if (primitive.ApplyModifiedProperties()) {
+			// This undo action seems to leak the material due to the object being passed to RecordObject being copied
+			// Undo.RecordObject(target, "Modify Triangle");
+
+			if (triangle.ApplyModifiedProperties() ||
+			    (Event.current.type == EventType.ValidateCommand && Event.current.commandName == "UndoRedoPerformed")) {
 				if (PrefabUtility.GetPrefabType(target) != PrefabType.Prefab) {
 					(target as Triangle2D).UpdateMesh();
-					(target as Triangle2D).UpdateColor();
 				}
 			}
 		}
@@ -41,6 +44,8 @@ namespace Primitives2D {
 		{
 			Triangle2D tri = (Triangle2D)target;
 			Transform triTransform = tri.transform;
+
+			Undo.RecordObject(tri, "Move Triangle Point");
 			
 			for (int i = 0; i < 3; ++i) {
 				Vector3 oldPoint = triTransform.TransformPoint(tri.m_Vertices[i]);

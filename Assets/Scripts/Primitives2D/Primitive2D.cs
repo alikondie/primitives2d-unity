@@ -1,17 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
 namespace Primitives2D {
 
 	public abstract class Primitive2D : MonoBehaviour
 	{
 		public Color color;
-		[HideInInspector]
+
+		// These need to be public in order to persist from the scene view to the game, otherwise the primitive will always
+		// be reinitialized at runtime with default vertices, and will cause leaks with the material.
 		public Vector3[] m_Vertices;
+		public Material m_Material;
 
 		protected Mesh m_Mesh;
 		protected MeshRenderer m_Renderer;
-		protected Material m_Material;
 		protected int[] m_Triangles;
 
 
@@ -69,26 +72,40 @@ namespace Primitives2D {
 
 			m_Mesh.RecalculateNormals ();
 			m_Mesh.RecalculateBounds ();
+
+			if (m_Material != null) {
+				m_Material.color = color;
+			}
 		}
 
 		/// <summary>
-		/// Updates the primitive's color in the scene view while updating in the inspector.
+		/// Instances call this base method from the MonoBehavior Reset method, which is invoked when resetting the script component in the inspector.
 		/// </summary>
-		public void UpdateColor ()
+		public void ResetPrimitive ()
 		{
-			m_Material.color = color;
+			transform.position = Vector3.zero;
+			transform.localRotation = Quaternion.identity;
+			transform.localScale = Vector3.one;
+			
+			color = Color.black;
+			m_Vertices = null;
+			
+			UpdateMesh();
 		}
 
 
+// MonoBehavior methods -------------------------------------------------------------
+
 		void OnDestroy ()
 		{
-			// Still need to verify this..
+			// Still need to verify this for memmory leak.
 			if (Application.isPlaying) {
 				Destroy (m_Material);
 			} else {
 				DestroyImmediate(m_Material);
 			}
 		}
+
 	}
 
 }

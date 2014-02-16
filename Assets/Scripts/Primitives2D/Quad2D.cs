@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
 namespace Primitives2D {
 
 	[ExecuteInEditMode, RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
@@ -64,15 +65,8 @@ namespace Primitives2D {
 			m_Mesh.triangles = m_Triangles;
 		}
 
-		private void LogSquareDataToConsole ()
-		{
-			Debug.Log ("Quad data...");
-			Debug.Log ("vertex[0] = " + m_Vertices[0].x + ", " + m_Vertices[0].y);
-			Debug.Log ("vertex[1] = " + m_Vertices[1].x + ", " + m_Vertices[1].y);
-			Debug.Log ("vertex[2] = " + m_Vertices[2].x + ", " + m_Vertices[2].y);
-			Debug.Log ("Vertex[3] = " + m_Vertices[3].x + ", " + m_Vertices[3].y);
-		}
 
+// MonoBehavior methods -------------------------------------------------------------
 
 		void Update ()
 		{
@@ -80,12 +74,12 @@ namespace Primitives2D {
 				transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
 		}
 
+		/// <summary>
+		/// This method is called when resetting the script component in the inspector.
+		/// </summary>
 		void Reset ()
 		{
-			m_Vertices = null;
-			color = Color.black;
-			UpdateMesh();
-			UpdateColor();
+			ResetPrimitive();
 		}
 
 	}

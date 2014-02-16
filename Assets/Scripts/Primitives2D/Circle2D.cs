@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
 namespace Primitives2D {
 
 	[ExecuteInEditMode, RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
@@ -89,24 +90,17 @@ namespace Primitives2D {
 
 			m_Mesh.triangles = m_Triangles;
 		}
-		
-		private void LogCircleDataToConsole ()
-		{
-			Debug.Log ("Circle data...");
-			for (int i = 0; i < numPoints; ++i)
-			{
-				Debug.Log ("vertex" + i + "] = " + m_Vertices[i].x + ", " + m_Vertices[i].y);
-			}
-		}
 
 
+// MonoBehavior methods -------------------------------------------------------------
+
+		/// <summary>
+		/// This method is called when resetting the script component in the inspector.
+		/// </summary>
 		void Reset ()
 		{
-			m_Vertices = null;
 			numPoints = 30;
-			color = Color.black;
-			UpdateMesh();
-			UpdateColor();
+			ResetPrimitive();
 		}
 
 	}

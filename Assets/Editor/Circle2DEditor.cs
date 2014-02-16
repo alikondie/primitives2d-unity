@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections;
 using Primitives2D;
 
+
 namespace Primitives2D {
 
 	[CustomEditor(typeof(Circle2D))]
@@ -25,11 +26,14 @@ namespace Primitives2D {
 
 			EditorGUILayout.PropertyField(color);
 			EditorGUILayout.PropertyField(numPoints);
+
+			// This undo action seems to leak the material due to the object being passed to RecordObject being copied
+			//Undo.RecordObject(target, "Modify Circle");
 			
-			if (primitive.ApplyModifiedProperties()) {
+			if (primitive.ApplyModifiedProperties() || 
+			    (Event.current.type == EventType.ValidateCommand && Event.current.commandName == "UndoRedoPerformed")) {
 				if (PrefabUtility.GetPrefabType(target) != PrefabType.Prefab) {
 					(target as Circle2D).UpdateMesh();
-					(target as Circle2D).UpdateColor();
 				}
 			}
 		}
