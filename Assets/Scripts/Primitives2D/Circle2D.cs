@@ -22,7 +22,7 @@ namespace Primitives2D {
 			UpdateMesh();
 			m_Mesh.name = "Circle Mesh";
 			if (!useCustomMaterial)
-				AddMaterial();
+				AddDefaultMaterial();
 		}
 
 		public override void CalculateVertices ()

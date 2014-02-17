@@ -7,16 +7,14 @@ namespace Primitives2D {
 	public abstract class Primitive2D : MonoBehaviour
 	{
 		// The color field is for the default material only, and has no effect if custom material is used.
-		// If useCustomMaterial is true, it only disables the color and any updates to the default material.
-		// The custom material should then be assigned to the mesh renderer.
-		// TODO: remove default material when custom is chosen.
+		// The custom material should be assigned to the mesh renderer as in normal Unity practice.
 		public bool useCustomMaterial = false;
 		public Color color;
 
-		// These need to be public in order to persist from the scene view to the game, otherwise the primitive will always
-		// be reinitialized at runtime with default vertices, and will cause leaks with the material.
-		public Vector3[] m_Vertices;
-		public Material m_Material;
+		[SerializeField]
+		protected Vector3[] m_Vertices;
+		[SerializeField]
+		protected Material m_Material;
 
 		protected Mesh m_Mesh;
 		protected MeshRenderer m_Renderer;
@@ -24,7 +22,8 @@ namespace Primitives2D {
 
 
 		/// <summary>
-		/// Creates and adds the MeshFilter component that is responsible for defining the shape of the primitive.
+		/// Creates and adds the MeshFilter component that is responsible for defining the shape of the primitive. To prevent the mesh from being cleaned
+		/// up by Unity during assembly reload, the hideFlags is set to HideAndDontSave, which also means we are responsible for destroying it (in OnDestroy).
 		/// </summary>
 		/// <returns>The mesh with added MeshFilter component.</returns>
 		public void CreateMesh ()
@@ -52,11 +51,15 @@ namespace Primitives2D {
 		public abstract void CalculateTriangles();
 
 		/// <summary>
-		/// Adds the material onto the shape's mesh renderer. If no material is specified in the inspector, the default "diffuse" shader is used
-		/// with the given color.
+		/// Adds the default material (normal diffuse) onto the shape's mesh renderer, which supports a single color and a base texture with simple lighting.
 		/// </summary>
-		public void AddMaterial ()
+		public void AddDefaultMaterial ()
 		{
+			// Clear (but don't destroy) any custom materials attached before adding default material.
+			for (int i = 0; i < renderer.sharedMaterials.Length; ++i) {
+				renderer.sharedMaterials[i] = null;
+			}
+
 			if (m_Material == null) {
 				m_Material = new Material(Shader.Find ("Diffuse"));
 				m_Material.color = color;
@@ -64,6 +67,21 @@ namespace Primitives2D {
 				renderer.material = m_Material;
 				renderer.castShadows = false;
 				renderer.receiveShadows = false;
+
+				useCustomMaterial = false;
+			}
+		}
+
+		/// <summary>
+		/// Removes the default (normal diffuse) material from the primitive, allowing for custom material(s) to be applied to the renderer. These should 
+		/// be applied as normal to the materials field of the mesh renderer.
+		/// </summary>
+		public void RemoveDefaultMaterial ()
+		{
+			if (m_Material != null) {
+				DestroyImmediate(m_Material);
+				useCustomMaterial = true;
+				color = Color.black;
 			}
 		}
 
@@ -125,6 +143,14 @@ namespace Primitives2D {
 		}
 
 		/// <summary>
+		/// Returns the vertex of the primitive at the specified index.
+		/// </summary>
+		public Vector3 GetVertex (int index)
+		{
+			return m_Vertices[index];
+		}
+
+		/// <summary>
 		/// Instances call this base method from the MonoBehavior Reset method, which is invoked when resetting the script component in the inspector.
 		/// </summary>
 		public void ResetPrimitive ()
@@ -144,12 +170,15 @@ namespace Primitives2D {
 
 		void OnDestroy ()
 		{
-			// Still need to verify this for memmory leak.
-			if (!useCustomMaterial) {
-				if (Application.isPlaying) {
-					Destroy (m_Material);
+			if (Application.isPlaying) {
+				Destroy(m_Mesh);
+				if (!useCustomMaterial) {
+					Destroy(m_Material);
 				}
-				else {
+			}
+			else {
+				DestroyImmediate(m_Mesh);
+				if (!useCustomMaterial) {
 					DestroyImmediate(m_Material);
 				}
 			}

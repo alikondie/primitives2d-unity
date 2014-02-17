@@ -21,7 +21,7 @@ namespace Primitives2D {
 			UpdateMesh ();
 			m_Mesh.name = "Triangle Mesh";
 			if (!useCustomMaterial)
-				AddMaterial();
+				AddDefaultMaterial();
 		}
 
 		public override void CalculateVertices ()

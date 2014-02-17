@@ -10,7 +10,7 @@ namespace Primitives2D {
 	public class Triangle2DEditor : Editor {
 
 		private SerializedObject primitive;
-		private SerializedProperty useCustomMaterial, color;
+		private SerializedProperty color;
 		private SerializedProperty snapVertexPositions;
 
 		// For vertex snapping.
@@ -22,7 +22,6 @@ namespace Primitives2D {
 		void OnEnable ()
 		{
 			primitive = new SerializedObject(target);
-			useCustomMaterial = primitive.FindProperty("useCustomMaterial");
 			color = primitive.FindProperty("color");
 
 			snapVertexPositions = primitive.FindProperty("snapVertexPositions");
@@ -41,10 +40,17 @@ namespace Primitives2D {
 			// Undo.RecordObject(target, "Modify Triangle");
 
 			// Material.
-			EditorGUILayout.PropertyField(useCustomMaterial);
-			GUI.enabled = !triTarget.useCustomMaterial;
-			EditorGUILayout.PropertyField(color);
-			GUI.enabled = true;
+			if (!triTarget.useCustomMaterial) {
+				if (GUILayout.Button("Use Custom Material")) {
+					triTarget.RemoveDefaultMaterial();
+				}
+				EditorGUILayout.PropertyField(color);
+			} else
+			{
+				if (GUILayout.Button("Use Default Material")) {
+					triTarget.AddDefaultMaterial();
+				}
+			}
 			EditorGUILayout.Space();
 
 			// Handle vertex snapping option.
@@ -98,8 +104,8 @@ namespace Primitives2D {
 
 			// Handle manual vertex movement by user.
 			for (int i = 0; i < 3; ++i) {
-				Vector3 oldPoint = tri.transform.TransformPoint(tri.m_Vertices[i]);
-				Vector3 newPoint = Handles.FreeMoveHandle(oldPoint, Quaternion.identity, 0.04f, Vector3.one * 0.1f, Handles.DotCap);
+				Vector3 oldPoint = tri.transform.TransformPoint(tri.GetVertex(i));
+				Vector3 newPoint = Handles.FreeMoveHandle(oldPoint, Quaternion.identity, VertexSnapper.VERTEX_HANDLE_SIZE, Vector3.one * 0.1f, Handles.DotCap);
 
 				if (tri.snapVertexPositions) {
 					VertexSnapper.SnapTo(tri.snapValue, ref newPoint);

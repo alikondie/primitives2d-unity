@@ -10,14 +10,13 @@ namespace Primitives2D {
 	public class Circle2DEditor : Editor {
 		
 		private SerializedObject primitive;
-		private SerializedProperty numPoints, useCustomMaterial, color;
+		private SerializedProperty numPoints, color;
 		
 		
 		void OnEnable ()
 		{
 			primitive = new SerializedObject(target);
 			numPoints = primitive.FindProperty("numPoints");
-			useCustomMaterial = primitive.FindProperty("useCustomMaterial");
 			color = primitive.FindProperty("color");
 		}
 		
@@ -31,10 +30,17 @@ namespace Primitives2D {
 			//Undo.RecordObject(target, "Modify Circle");
 
 			// Material.
-			EditorGUILayout.PropertyField(useCustomMaterial);
-			GUI.enabled = !circleTarget.useCustomMaterial;
-			EditorGUILayout.PropertyField(color);
-			GUI.enabled = true;
+			if (!circleTarget.useCustomMaterial) {
+				if (GUILayout.Button("Use Custom Material")) {
+					circleTarget.RemoveDefaultMaterial();
+				}
+				EditorGUILayout.PropertyField(color);
+			} else
+			{
+				if (GUILayout.Button("Use Default Material")) {
+					circleTarget.AddDefaultMaterial();
+				}
+			}
 			EditorGUILayout.Space();
 
 			// Number of points.

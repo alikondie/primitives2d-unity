@@ -6,6 +6,8 @@ namespace Primitives2D {
 
 	public static class VertexSnapper {
 
+		public const float VERTEX_HANDLE_SIZE = 0.04f;
+
 		private const float MIN_SNAP_VALUE = 0.1f;
 		private const float MAX_SNAP_VALUE = 1.0f;
 
