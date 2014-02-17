@@ -192,6 +192,7 @@ GameObject:
   - 33: {fileID: 874628574}
   - 23: {fileID: 874628573}
   - 114: {fileID: 874628572}
+  - 60: {fileID: 874628576}
   m_Layer: 0
   m_Name: quad_2
   m_TagString: Untagged
@@ -212,7 +213,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   color: {r: .536764741, g: .347318351, b: .36691618, a: 1}
   m_Vertices:
-  - {x: .955378532, y: 1.06303596, z: 0}
+  - {x: .984864831, y: 1.16047156, z: 0}
   - {x: -2.05032706, y: .948287487, z: 0}
   - {x: 1.11639512, y: 1.67675447, z: 0}
   - {x: 3.48858356, y: -.443963528, z: 0}
@@ -259,6 +260,21 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1700201631}
+--- !u!60 &874628576
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 874628571}
+  m_Enabled: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Poly:
+    m_Paths:
+    - - {x: .984864831, y: 1.16047156}
+      - {x: -2.05032706, y: .948287487}
+      - {x: 1.11639512, y: 1.67675447}
+      - {x: 3.48858356, y: -.443963528}
 --- !u!1 &932631171
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,13 +307,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   color: {r: .445501715, g: .49373582, b: .588235259, a: 1}
   m_Vertices:
-  - {x: -1.68206501, y: -.937299252, z: 0}
-  - {x: .31793499, y: 1.06270075, z: 0}
-  - {x: 2.82549381, y: -1.46171761, z: 0}
+  - {x: -.68206501, y: -.937299252, z: 0}
+  - {x: .81793499, y: .562700748, z: 0}
+  - {x: 2.31793499, y: -1.43729925, z: 0}
   m_Material: {fileID: 1200164714}
   rotationSpeed: 0
   snapValue: .5
-  snapVertexPositions: 0
+  snapVertexPositions: 1
 --- !u!23 &932631173
 Renderer:
   m_ObjectHideFlags: 0
@@ -348,9 +364,9 @@ PolygonCollider2D:
   m_IsTrigger: 0
   m_Poly:
     m_Paths:
-    - - {x: -1.68206501, y: -.937299252}
-      - {x: .31793499, y: 1.06270075}
-      - {x: 2.82549381, y: -1.46171761}
+    - - {x: -.68206501, y: -.937299252}
+      - {x: .81793499, y: .562700748}
+      - {x: 2.31793499, y: -1.43729925}
 --- !u!21 &948136877
 Material:
   serializedVersion: 3
@@ -651,7 +667,7 @@ MonoBehaviour:
   color: {r: 0, g: 0, b: 0, a: 1}
   m_Vertices:
   - {x: -.253111154, y: -.786043644, z: 0}
-  - {x: -1.01637793, y: .977665186, z: 0}
+  - {x: -.914938807, y: .804313421, z: 0}
   - {x: .333587408, y: 1.28330624, z: 0}
   - {x: 1.65283477, y: -.235746831, z: 0}
   m_Material: {fileID: 1350342383}
@@ -709,7 +725,7 @@ PolygonCollider2D:
   m_Poly:
     m_Paths:
     - - {x: -.253111154, y: -.786043644}
-      - {x: -1.01637793, y: .977665186}
+      - {x: -.914938807, y: .804313421}
       - {x: .333587408, y: 1.28330624}
       - {x: 1.65283477, y: -.235746831}
 --- !u!1 &1921966390
@@ -743,13 +759,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   color: {r: .352778971, g: .551470578, b: .39525786, a: 1}
   m_Vertices:
-  - {x: -.397361755, y: -.5, z: 0}
+  - {x: .102638245, y: 0, z: 0}
   - {x: -.897361755, y: 2, z: 0}
-  - {x: 2.10263824, y: 2.5, z: 0}
-  - {x: 2.10263824, y: -.5, z: 0}
+  - {x: 2.41357994, y: 3.17077494, z: 0}
+  - {x: 1.10263824, y: 0, z: 0}
   m_Material: {fileID: 1924269079}
   rotationSpeed: 0
-  snapValue: .5
+  snapValue: .100000001
   snapVertexPositions: 0
 --- !u!23 &1921966392
 Renderer:
