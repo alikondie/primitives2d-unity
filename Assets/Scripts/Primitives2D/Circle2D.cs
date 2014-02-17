@@ -10,7 +10,7 @@ namespace Primitives2D {
 		[Range(10, 120)]
 		public int numPoints = 30;
 
-		private const float UNIT_RADIUS = 1f;
+		private const float UNIT_DIAMETER = 1f;
 		private const float TWO_PI = Mathf.PI * 2f;
 
 
@@ -21,7 +21,8 @@ namespace Primitives2D {
 		{
 			UpdateMesh();
 			m_Mesh.name = "Circle Mesh";
-			AddMaterial();
+			if (!useCustomMaterial)
+				AddMaterial();
 		}
 
 		public override void CalculateVertices ()
@@ -34,6 +35,7 @@ namespace Primitives2D {
 				float x, y;
 				float angle = 0f;
 				float angleIncr = TWO_PI / numPoints;
+				float radius = UNIT_DIAMETER / 2f;
 
 				// Clearing the mesh resets the triangle and uv indexes and prevents an error from occuring when decreasing the number of
 				// points in the circle which results in the triangle/uv arrays being temporarily larger than the vertices array.
@@ -43,8 +45,8 @@ namespace Primitives2D {
 				m_Vertices[0] = new Vector3(0f, 0f, 0f);
 				for (int i = 1; i < (numPoints + 1); ++i)
 				{
-					x = UNIT_RADIUS * Mathf.Cos (angle);
-					y = -UNIT_RADIUS * Mathf.Sin (angle);
+					x = radius * Mathf.Cos (angle);
+					y = -radius * Mathf.Sin (angle);
 					m_Vertices[i] = new Vector3(x, y, 0f);
 					angle += angleIncr;
 				}

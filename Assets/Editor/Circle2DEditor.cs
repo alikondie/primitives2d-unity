@@ -10,13 +10,14 @@ namespace Primitives2D {
 	public class Circle2DEditor : Editor {
 		
 		private SerializedObject primitive;
-		private SerializedProperty numPoints, color;
+		private SerializedProperty numPoints, useCustomMaterial, color;
 		
 		
 		void OnEnable ()
 		{
 			primitive = new SerializedObject(target);
 			numPoints = primitive.FindProperty("numPoints");
+			useCustomMaterial = primitive.FindProperty("useCustomMaterial");
 			color = primitive.FindProperty("color");
 		}
 		
@@ -29,12 +30,18 @@ namespace Primitives2D {
 			// This undo action seems to leak the material due to the object being passed to RecordObject being copied
 			//Undo.RecordObject(target, "Modify Circle");
 
-			// Draw basic property fields defined in base class.
+			// Material.
+			EditorGUILayout.PropertyField(useCustomMaterial);
+			GUI.enabled = !circleTarget.useCustomMaterial;
 			EditorGUILayout.PropertyField(color);
+			GUI.enabled = true;
+			EditorGUILayout.Space();
+
+			// Number of points.
 			EditorGUILayout.PropertyField(numPoints);
 			EditorGUILayout.Space();
 
-			// Option for adding a collider to the primitive.
+			// Collider.
 			if (GUILayout.Button("Add Collider")) {
 				circleTarget.AddCollider(circleTarget.numPoints);
 			}

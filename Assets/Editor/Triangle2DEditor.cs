@@ -9,39 +9,42 @@ namespace Primitives2D {
 	[CustomEditor(typeof(Triangle2D))]
 	public class Triangle2DEditor : Editor {
 
-		private SerializedObject triangle;
-		private SerializedProperty color, rotationSpeed;
+		private SerializedObject primitive;
+		private SerializedProperty useCustomMaterial, color;
 		private SerializedProperty snapVertexPositions;
 
-		private Vector3 snapPoint = Vector3.one * 0.1f;
+		// For vertex snapping.
 		private float editorSnapValue;
 		private bool snapValuesSame;
-		private bool displaySnapValueError;
+		private bool snapValueInRange;
 
 
 		void OnEnable ()
 		{
-			triangle = new SerializedObject(target);
-			color = triangle.FindProperty("color");
-			rotationSpeed = triangle.FindProperty("rotationSpeed");
-			snapVertexPositions = triangle.FindProperty("snapVertexPositions");
+			primitive = new SerializedObject(target);
+			useCustomMaterial = primitive.FindProperty("useCustomMaterial");
+			color = primitive.FindProperty("color");
+
+			snapVertexPositions = primitive.FindProperty("snapVertexPositions");
 			editorSnapValue = (target as Triangle2D).snapValue;
 			snapValuesSame = true;
-			displaySnapValueError = false;
+			snapValueInRange = true;
 		}
 		
 		public override void OnInspectorGUI ()
 		{
 			Triangle2D triTarget = (Triangle2D)target;
 
-			triangle.Update();
+			primitive.Update();
 
 			// This undo action seems to leak the material due to the object being passed to RecordObject being copied
 			// Undo.RecordObject(target, "Modify Triangle");
 
-			// Draw basic property fields defined in base class.
+			// Material.
+			EditorGUILayout.PropertyField(useCustomMaterial);
+			GUI.enabled = !triTarget.useCustomMaterial;
 			EditorGUILayout.PropertyField(color);
-			EditorGUILayout.PropertyField(rotationSpeed);
+			GUI.enabled = true;
 			EditorGUILayout.Space();
 
 			// Handle vertex snapping option.
@@ -62,35 +65,24 @@ namespace Primitives2D {
 				// Only enable the Apply button if the snap value in the inspector is different from the primitive's value.
 				GUI.enabled = !snapValuesSame;
 				if (GUILayout.Button("Apply")) {
-					if (editorSnapValue < 0.1f) {
-						editorSnapValue = 0.1f;
-						displaySnapValueError = true;
-					}
-					else if (editorSnapValue > 1.0f) {
-						editorSnapValue = 1.0f;
-						displaySnapValueError = true;
-					}
-					else {
-						triTarget.snapValue = editorSnapValue;
-						displaySnapValueError = false;
-					}
+					snapValueInRange = VertexSnapper.Clamp(ref editorSnapValue, ref triTarget.snapValue);
 				}
 				GUI.enabled = true;
 				EditorGUILayout.EndHorizontal();
 			}
 
-			if (displaySnapValueError)
+			if (!snapValueInRange)
 				EditorGUILayout.HelpBox("Snap value must be between 0.1 and 1.0", MessageType.Error, true);
 
 			EditorGUILayout.Space();
 
-			// Option for adding a collider to the primitive.
+			// Collider.
 			if (GUILayout.Button("Add Collider")) {
 				triTarget.AddCollider(3);
 			}
 
 			// Handle updating of the primitive's mesh when changes are made.
-			if (triangle.ApplyModifiedProperties() ||
+			if (primitive.ApplyModifiedProperties() ||
 			    (Event.current.type == EventType.ValidateCommand && Event.current.commandName == "UndoRedoPerformed")) {
 				if (PrefabUtility.GetPrefabType(target) != PrefabType.Prefab) {
 					triTarget.UpdateMesh();
@@ -107,11 +99,10 @@ namespace Primitives2D {
 			// Handle manual vertex movement by user.
 			for (int i = 0; i < 3; ++i) {
 				Vector3 oldPoint = tri.transform.TransformPoint(tri.m_Vertices[i]);
-				Vector3 newPoint = Handles.FreeMoveHandle(oldPoint, Quaternion.identity, 0.04f, snapPoint, Handles.DotCap);
+				Vector3 newPoint = Handles.FreeMoveHandle(oldPoint, Quaternion.identity, 0.04f, Vector3.one * 0.1f, Handles.DotCap);
 
 				if (tri.snapVertexPositions) {
-					newPoint.x = (float)Mathf.RoundToInt(newPoint.x / tri.snapValue) * tri.snapValue;
-					newPoint.y = (float)Mathf.RoundToInt(newPoint.y / tri.snapValue) * tri.snapValue;
+					VertexSnapper.SnapTo(tri.snapValue, ref newPoint);
 				}
 
 				if (oldPoint != newPoint) {

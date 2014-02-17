@@ -7,7 +7,6 @@ namespace Primitives2D {
 	[ExecuteInEditMode, RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 	public class Triangle2D : Primitive2D
 	{
-		public float rotationSpeed = 0f;
 		public float snapValue = 0.5f;
 		public bool snapVertexPositions = false;
 
@@ -21,7 +20,8 @@ namespace Primitives2D {
 		{
 			UpdateMesh ();
 			m_Mesh.name = "Triangle Mesh";
-			AddMaterial();
+			if (!useCustomMaterial)
+				AddMaterial();
 		}
 
 		public override void CalculateVertices ()
@@ -66,12 +66,6 @@ namespace Primitives2D {
 
 
 // MonoBehavior methods -------------------------------------------------------------
-
-		void Update ()
-		{
-			if (rotationSpeed != 0f)
-				transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
-		}
 
 		/// <summary>
 		/// This method is called when resetting the script component in the inspector.

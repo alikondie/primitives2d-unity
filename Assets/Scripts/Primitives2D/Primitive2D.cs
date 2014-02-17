@@ -6,6 +6,11 @@ namespace Primitives2D {
 
 	public abstract class Primitive2D : MonoBehaviour
 	{
+		// The color field is for the default material only, and has no effect if custom material is used.
+		// If useCustomMaterial is true, it only disables the color and any updates to the default material.
+		// The custom material should then be assigned to the mesh renderer.
+		// TODO: remove default material when custom is chosen.
+		public bool useCustomMaterial = false;
 		public Color color;
 
 		// These need to be public in order to persist from the scene view to the game, otherwise the primitive will always
@@ -94,7 +99,7 @@ namespace Primitives2D {
 			m_Mesh.RecalculateNormals ();
 			m_Mesh.RecalculateBounds ();
 
-			if (m_Material != null) {
+			if (m_Material != null && !useCustomMaterial) {
 				m_Material.color = color;
 			}
 		}
@@ -140,10 +145,13 @@ namespace Primitives2D {
 		void OnDestroy ()
 		{
 			// Still need to verify this for memmory leak.
-			if (Application.isPlaying) {
-				Destroy (m_Material);
-			} else {
-				DestroyImmediate(m_Material);
+			if (!useCustomMaterial) {
+				if (Application.isPlaying) {
+					Destroy (m_Material);
+				}
+				else {
+					DestroyImmediate(m_Material);
+				}
 			}
 		}
 

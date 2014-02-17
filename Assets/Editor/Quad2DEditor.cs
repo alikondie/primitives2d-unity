@@ -10,24 +10,25 @@ namespace Primitives2D {
 	public class Quad2DEditor : Editor {
 
 		private SerializedObject primitive;
-		private SerializedProperty color, rotationSpeed;
+		private SerializedProperty useCustomMaterial, color;
 		private SerializedProperty snapVertexPositions;
 
-		private Vector3 snapPoint = Vector3.one * 0.1f;
+		// For handling vertex snapping.
 		private float editorSnapValue;
 		private bool snapValuesSame;
-		private bool displaySnapValueError;
+		private bool snapValueInRange;
 
 		
 		void OnEnable ()
 		{
 			primitive = new SerializedObject(target);
+			useCustomMaterial = primitive.FindProperty("useCustomMaterial");
 			color = primitive.FindProperty("color");
-			rotationSpeed = primitive.FindProperty("rotationSpeed");
+
 			snapVertexPositions = primitive.FindProperty("snapVertexPositions");
 			editorSnapValue = (target as Quad2D).snapValue;
 			snapValuesSame = true;
-			displaySnapValueError = false;
+			snapValueInRange = true;
 		}
 		
 		public override void OnInspectorGUI ()
@@ -39,9 +40,11 @@ namespace Primitives2D {
 			// This undo action seems to leak the material due to the object being passed to RecordObject being copied
 			//Undo.RecordObject((target as Quad2D), "Modify Quad");
 
-			// Draw basic property fields defined in base class.
+			// Material.
+			EditorGUILayout.PropertyField(useCustomMaterial);
+			GUI.enabled = !quadTarget.useCustomMaterial;
 			EditorGUILayout.PropertyField(color);
-			EditorGUILayout.PropertyField(rotationSpeed);
+			GUI.enabled = true;
 			EditorGUILayout.Space();
 
 			// Handle vertex snapping option.
@@ -62,29 +65,18 @@ namespace Primitives2D {
 				// Only enable the Apply button if the snap value in the inspector is different from the primitive's value.
 				GUI.enabled = !snapValuesSame;
 				if (GUILayout.Button("Apply")) {
-					if (editorSnapValue < 0.1f) {
-						editorSnapValue = 0.1f;
-						displaySnapValueError = true;
-					}
-					else if (editorSnapValue > 1.0f) {
-						editorSnapValue = 1.0f;
-						displaySnapValueError = true;
-					}
-					else {
-						quadTarget.snapValue = editorSnapValue;
-						displaySnapValueError = false;
-					}
+					snapValueInRange = VertexSnapper.Clamp(ref editorSnapValue, ref quadTarget.snapValue);
 				}
 				GUI.enabled = true;
 				EditorGUILayout.EndHorizontal();
 			}
 
-			if (displaySnapValueError)
+			if (!snapValueInRange)
 				EditorGUILayout.HelpBox("Snap value must be between 0.1 and 1.0", MessageType.Error, true);
 
 			EditorGUILayout.Space();
 
-			// Option for adding a collider to the primitive.
+			// Collider.
 			if (GUILayout.Button("Add Collider")) {
 				quadTarget.AddCollider(4);
 			}
@@ -107,11 +99,10 @@ namespace Primitives2D {
 			// Handle manual vertex movement by user.
 			for (int i = 0; i < 4; ++i) {
 				Vector3 oldPoint = quad.transform.TransformPoint(quad.m_Vertices[i]);
-				Vector3 newPoint = Handles.FreeMoveHandle(oldPoint, Quaternion.identity, 0.04f, snapPoint, Handles.DotCap);
+				Vector3 newPoint = Handles.FreeMoveHandle(oldPoint, Quaternion.identity, 0.04f, Vector3.one * 0.1f, Handles.DotCap);
 
 				if (quad.snapVertexPositions) {
-					newPoint.x = (float)Mathf.RoundToInt(newPoint.x / quad.snapValue) * quad.snapValue;
-					newPoint.y = (float)Mathf.RoundToInt(newPoint.y / quad.snapValue) * quad.snapValue;
+					VertexSnapper.SnapTo(quad.snapValue, ref newPoint);
 				}
 
 				if (oldPoint != newPoint) {
