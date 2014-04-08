@@ -50,9 +50,11 @@ namespace Primitives2D {
 		public override void CalculateUVs ()
 		{
 			m_Mesh.uv = new Vector2[3]{
-				new Vector2(m_Vertices[0].x, m_Vertices[0].y), 
-				new Vector2(m_Vertices[1].x, m_Vertices[1].y), 
-				new Vector2(m_Vertices[2].x, m_Vertices[2].y)
+				// Bias the UVs array so that range is [0..1].
+				// Vertices array is ( (-0.5, -0.3), (0.0, 0.6), (0.5, -0.3) )
+				new Vector2(m_Vertices[0].x + 0.5f, m_Vertices[0].y + 0.3f), 
+				new Vector2(m_Vertices[1].x + 0.5f, m_Vertices[1].y + 0.4f), 
+				new Vector2(m_Vertices[2].x + 0.5f, m_Vertices[2].y + 0.3f)
 			};
 			m_Mesh.uv1 = m_Mesh.uv;
 			m_Mesh.uv2 = m_Mesh.uv;

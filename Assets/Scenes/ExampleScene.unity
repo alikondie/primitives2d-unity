@@ -360,9 +360,9 @@ MonoBehaviour:
   useCustomMaterial: 0
   color: {r: .742647052, g: .5296821, b: .5296821, a: 1}
   m_Vertices:
-  - {x: .491215229, y: -3.08053541, z: 0}
-  - {x: 2.49121523, y: -.580535412, z: 0}
-  - {x: 4.99121523, y: -7.08053541, z: 0}
+  - {x: 2.09456587, y: -4.50110626, z: 0}
+  - {x: 4.09456587, y: -2.00110626, z: 0}
+  - {x: 6.59456587, y: -8.50110626, z: 0}
   m_Material: {fileID: 795078582}
   snapValue: .5
   snapVertexPositions: 1
@@ -401,7 +401,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 932631171}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.50878477, y: 6.08053541, z: 0}
+  m_LocalPosition: {x: .905434132, y: 8.00110626, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 779868250}
@@ -416,9 +416,9 @@ PolygonCollider2D:
   m_IsTrigger: 0
   m_Poly:
     m_Paths:
-    - - {x: .491215229, y: -3.08053541}
-      - {x: 2.49121523, y: -.580535412}
-      - {x: 4.99121523, y: -7.08053541}
+    - - {x: 2.09456587, y: -4.50110626}
+      - {x: 4.09456587, y: -2.00110626}
+      - {x: 6.59456587, y: -8.50110626}
 --- !u!21 &1125648718
 Material:
   serializedVersion: 3
